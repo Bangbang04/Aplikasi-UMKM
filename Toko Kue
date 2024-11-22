@@ -1,0 +1,214 @@
+package tokokue;
+
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TokoKue {
+    private static HashMap<String, String> penggunaMap;
+    private static List<Kue> daftarKue;
+
+    public static void main(String[] args) {
+        penggunaMap = new HashMap<>();
+        daftarKue = new ArrayList<>();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\nMenu Utama:");
+            System.out.println("1. Daftar");
+            System.out.println("2. Login");
+            System.out.println("3. Keluar");
+            System.out.print("Pilih: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine(); // Clear newline
+
+            switch (pilihan) {
+                case 1:
+                    daftar(scanner);
+                    break;
+                case 2:
+                    if (login(scanner)) {
+                        System.out.println("Login berhasil!");
+                        menu(scanner);
+                    } else {
+                        System.out.println("Login gagal!");
+                    }
+                    break;
+                case 3:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
+        scanner.close();
+    }
+
+    private static void daftar(Scanner scanner) {
+        System.out.print("Masukkan username baru: ");
+        String username = scanner.nextLine();
+        String password = scanner.nextLine();
+
+        if (penggunaMap.containsKey(username)) {
+            System.out.println("Username sudah digunakan. Silakan coba lagi.");
+        } else {
+            penggunaMap.put(username, password);
+            System.out.println("Pendaftaran berhasil!");
+        }
+    }
+
+    //Untuk Login Dan String
+    private static boolean login(Scanner scanner) {
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+        // Untuk Operator Logika
+        return penggunaMap.containsKey(username) && penggunaMap.get(username).equals(password);
+    }
+
+    private static void menu(Scanner scanner) {
+        boolean running = true;
+        while (running) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Lihat Kue");
+            System.out.println("2. Tambah Kue");
+            System.out.println("3. Pilih Kue");
+            System.out.println("4. Tambah Komentar");
+            System.out.println("5. Keluar");
+            System.out.print("Pilih: ");
+            int pilihan = scanner.nextInt();
+            scanner.nextLine(); // Clear newline
+
+            switch (pilihan) {
+                case 1:
+                    tampilkanKue();
+                    break;
+                case 2:
+                    tambahKue(scanner);
+                    break;
+                case 3:
+                    pilihKue(scanner);
+                    break;
+                //Untuk Komentar
+                case 4:
+                    System.out.print("Masukkan komentar: ");
+                    String komentar = scanner.nextLine();
+                    System.out.println("Komentar Anda: " + komentar);
+                    break;
+                case 5:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
+    }
+
+    private static void tampilkanKue() {
+        System.out.println("Daftar Kue:");
+        if (daftarKue.isEmpty()) {
+            System.out.println("Belum ada kue yang ditambahkan.");
+            return;
+        }
+        for (int i = 0; i < daftarKue.size(); i++) {
+            System.out.println((i + 1) + ". " + daftarKue.get(i));
+        }
+    }
+
+    private static void tambahKue(Scanner scanner) {
+        System.out.print("Masukkan nama kue: ");
+        String namaKue = scanner.nextLine();
+        System.out.print("Masukkan harga kue: ");
+        double hargaKue = scanner.nextDouble();
+        scanner.nextLine(); // Clear newline
+
+        //Untuk Casting
+        Kue kueBaru = new Kue(namaKue, (int) hargaKue);
+        daftarKue.add(kueBaru);
+        System.out.println("Kue " + namaKue + " telah ditambahkan.");
+    }
+
+    private static void pilihKue(Scanner scanner) {
+        List<Kue> kueDipilih = new ArrayList<>();
+        boolean memilih = true;
+
+        while (memilih) {
+            System.out.print("Pilih nomor kue yang ingin dibeli (atau ketik 0 untuk selesai): ");
+            int pilihan = scanner.nextInt();
+            if (pilihan == 0) {
+                memilih = false;
+                break;
+            }
+            if (pilihan > 0 && pilihan <= daftarKue.size()) {
+                Kue kue = daftarKue.get(pilihan - 1);
+                kueDipilih.add(kue);
+                System.out.println("Anda memilih: " + kue.getNama());
+            } else {
+                System.out.println("Nomor kue tidak valid.");
+            }
+        }
+
+        // Menghitung total harga
+        int totalHarga = 0;
+        System.out.println("\nKue yang Anda pilih:");
+        for (Kue kue : kueDipilih) {
+            System.out.println(kue);
+            //Untuk Operator Aritmatika
+            totalHarga += kue.getHarga();
+        }
+        System.out.println("Total Harga: Rp" + totalHarga);
+    }
+    
+    /* Dalam konteks ini, meskipun tidak ada penggunaan array langsung, ada metode convertToArray() 
+yang mengonversi ArrayList<Kue> menjadi array Kue[].*/ 
+    private static Kue[] convertToArray() {
+        return daftarKue.toArray(new Kue[0]);
+    }
+}
+
+class Kue {
+    // Untuk  Enkapsulasi
+    private String nama;
+    private int harga;
+
+    public Kue(String nama, int harga) {
+        this.nama = nama;
+        this.harga = harga;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public int getHarga() {
+        return (int) harga;
+    }
+
+    @Override
+    public String toString() {
+        return this.nama + " - Rp" + this.harga;
+    }
+}
+
+//Untuk Inter Inheritance Kelas turunan dari Kue
+class KueKering extends Kue {
+    private String jenis;
+
+    public KueKering(String nama, int harga, String jenis) {
+        super(nama, harga);
+        this.jenis = jenis;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " (Jenis: " + this.jenis + ")";
+    }
+}   
